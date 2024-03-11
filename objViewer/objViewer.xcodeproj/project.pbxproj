@@ -12,15 +12,7 @@
 		0A8F919D2B98B37C00E9D0B6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A8F919C2B98B37C00E9D0B6 /* Assets.xcassets */; };
 		0A8F91A02B98B37C00E9D0B6 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 0A8F919F2B98B37C00E9D0B6 /* Base */; };
 		0A8F91A92B98B39200E9D0B6 /* SceneKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A8F91A82B98B39200E9D0B6 /* SceneKit.framework */; };
-		0A8F91B62B98B3C200E9D0B6 /* texture0.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A8F91AA2B98B3C200E9D0B6 /* texture0.jpg */; };
-		0A8F91B72B98B3C200E9D0B6 /* texture1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A8F91AB2B98B3C200E9D0B6 /* texture1.jpg */; };
-		0A8F91B82B98B3C200E9D0B6 /* texture2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A8F91AC2B98B3C200E9D0B6 /* texture2.jpg */; };
-		0A8F91B92B98B3C200E9D0B6 /* texture3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A8F91AD2B98B3C200E9D0B6 /* texture3.jpg */; };
-		0A8F91BA2B98B3C200E9D0B6 /* model_normalized.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A8F91AF2B98B3C200E9D0B6 /* model_normalized.json */; };
-		0A8F91BB2B98B3C200E9D0B6 /* model_normalized.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 0A8F91B02B98B3C200E9D0B6 /* model_normalized.mtl */; };
-		0A8F91BC2B98B3C200E9D0B6 /* model_normalized.obj in Resources */ = {isa = PBXBuildFile; fileRef = 0A8F91B12B98B3C200E9D0B6 /* model_normalized.obj */; };
-		0A8F91BD2B98B3C200E9D0B6 /* model_normalized.solid.binvox in Resources */ = {isa = PBXBuildFile; fileRef = 0A8F91B22B98B3C200E9D0B6 /* model_normalized.solid.binvox */; };
-		0A8F91BE2B98B3C200E9D0B6 /* model_normalized.surface.binvox in Resources */ = {isa = PBXBuildFile; fileRef = 0A8F91B32B98B3C200E9D0B6 /* model_normalized.surface.binvox */; };
+		0A8F973F2B98BC6800E9D0B6 /* 02773838 in Resources */ = {isa = PBXBuildFile; fileRef = 0A8F973E2B98BC6800E9D0B6 /* 02773838 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,15 +23,7 @@
 		0A8F919F2B98B37C00E9D0B6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0A8F91A12B98B37C00E9D0B6 /* objViewer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = objViewer.entitlements; sourceTree = "<group>"; };
 		0A8F91A82B98B39200E9D0B6 /* SceneKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SceneKit.framework; path = System/Library/Frameworks/SceneKit.framework; sourceTree = SDKROOT; };
-		0A8F91AA2B98B3C200E9D0B6 /* texture0.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = texture0.jpg; sourceTree = "<group>"; };
-		0A8F91AB2B98B3C200E9D0B6 /* texture1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = texture1.jpg; sourceTree = "<group>"; };
-		0A8F91AC2B98B3C200E9D0B6 /* texture2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = texture2.jpg; sourceTree = "<group>"; };
-		0A8F91AD2B98B3C200E9D0B6 /* texture3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = texture3.jpg; sourceTree = "<group>"; };
-		0A8F91AF2B98B3C200E9D0B6 /* model_normalized.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = model_normalized.json; sourceTree = "<group>"; };
-		0A8F91B02B98B3C200E9D0B6 /* model_normalized.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = model_normalized.mtl; sourceTree = "<group>"; };
-		0A8F91B12B98B3C200E9D0B6 /* model_normalized.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = model_normalized.obj; sourceTree = "<group>"; };
-		0A8F91B22B98B3C200E9D0B6 /* model_normalized.solid.binvox */ = {isa = PBXFileReference; lastKnownFileType = file; path = model_normalized.solid.binvox; sourceTree = "<group>"; };
-		0A8F91B32B98B3C200E9D0B6 /* model_normalized.surface.binvox */ = {isa = PBXFileReference; lastKnownFileType = file; path = model_normalized.surface.binvox; sourceTree = "<group>"; };
+		0A8F973E2B98BC6800E9D0B6 /* 02773838 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 02773838; path = ../../02773838; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,7 +58,7 @@
 		0A8F91972B98B37B00E9D0B6 /* objViewer */ = {
 			isa = PBXGroup;
 			children = (
-				0A8F91B52B98B3C200E9D0B6 /* 1b9ef45fefefa35ed13f430b2941481 */,
+				0A8F973E2B98BC6800E9D0B6 /* 02773838 */,
 				0A8F91982B98B37B00E9D0B6 /* AppDelegate.swift */,
 				0A8F919A2B98B37B00E9D0B6 /* ViewController.swift */,
 				0A8F919C2B98B37C00E9D0B6 /* Assets.xcassets */,
@@ -90,38 +74,6 @@
 				0A8F91A82B98B39200E9D0B6 /* SceneKit.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		0A8F91AE2B98B3C200E9D0B6 /* images */ = {
-			isa = PBXGroup;
-			children = (
-				0A8F91AA2B98B3C200E9D0B6 /* texture0.jpg */,
-				0A8F91AB2B98B3C200E9D0B6 /* texture1.jpg */,
-				0A8F91AC2B98B3C200E9D0B6 /* texture2.jpg */,
-				0A8F91AD2B98B3C200E9D0B6 /* texture3.jpg */,
-			);
-			path = images;
-			sourceTree = "<group>";
-		};
-		0A8F91B42B98B3C200E9D0B6 /* models */ = {
-			isa = PBXGroup;
-			children = (
-				0A8F91AF2B98B3C200E9D0B6 /* model_normalized.json */,
-				0A8F91B02B98B3C200E9D0B6 /* model_normalized.mtl */,
-				0A8F91B12B98B3C200E9D0B6 /* model_normalized.obj */,
-				0A8F91B22B98B3C200E9D0B6 /* model_normalized.solid.binvox */,
-				0A8F91B32B98B3C200E9D0B6 /* model_normalized.surface.binvox */,
-			);
-			path = models;
-			sourceTree = "<group>";
-		};
-		0A8F91B52B98B3C200E9D0B6 /* 1b9ef45fefefa35ed13f430b2941481 */ = {
-			isa = PBXGroup;
-			children = (
-				0A8F91AE2B98B3C200E9D0B6 /* images */,
-				0A8F91B42B98B3C200E9D0B6 /* models */,
-			);
-			path = 1b9ef45fefefa35ed13f430b2941481;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -183,15 +135,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A8F919D2B98B37C00E9D0B6 /* Assets.xcassets in Resources */,
-				0A8F91BA2B98B3C200E9D0B6 /* model_normalized.json in Resources */,
-				0A8F91B92B98B3C200E9D0B6 /* texture3.jpg in Resources */,
-				0A8F91B82B98B3C200E9D0B6 /* texture2.jpg in Resources */,
-				0A8F91BB2B98B3C200E9D0B6 /* model_normalized.mtl in Resources */,
-				0A8F91B72B98B3C200E9D0B6 /* texture1.jpg in Resources */,
-				0A8F91BC2B98B3C200E9D0B6 /* model_normalized.obj in Resources */,
-				0A8F91BD2B98B3C200E9D0B6 /* model_normalized.solid.binvox in Resources */,
-				0A8F91B62B98B3C200E9D0B6 /* texture0.jpg in Resources */,
-				0A8F91BE2B98B3C200E9D0B6 /* model_normalized.surface.binvox in Resources */,
+				0A8F973F2B98BC6800E9D0B6 /* 02773838 in Resources */,
 				0A8F91A02B98B37C00E9D0B6 /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

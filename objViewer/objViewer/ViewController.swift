@@ -9,7 +9,7 @@ class ViewController: NSViewController {
         super.viewDidLoad()
 
         // Initialize the scene
-        scene = SCNScene(named: "model_normalized.obj")
+        scene = SCNScene(named: "02773838/a55b721ea5a29d7f639ff561fa3f5bac/models/model_normalized.obj")
         
         // Setup the scene view
         sceneView = SCNView(frame: self.view.bounds)
