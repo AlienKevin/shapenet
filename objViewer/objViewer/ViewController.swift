@@ -44,7 +44,7 @@ class ViewController: NSViewController {
     }
     
     func takeScreenshotsAroundObject(_ obj_name: String, _ cameraNode: SCNNode, _ sceneView: SCNView) {
-        let steps = 4
+        let steps = 6
         let fullCircle: CGFloat = .pi * 2
         let stepAngle: CGFloat = fullCircle / CGFloat(steps)
         let radius: Float = 1.5
