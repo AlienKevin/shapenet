@@ -1,10 +1,10 @@
 from typing import List, Optional
+import json
 
 import vertexai
 from vertexai.vision_models import (
     Image,
     MultiModalEmbeddingModel,
-    MultiModalEmbeddingResponse,
 )
 
 import numpy as np
@@ -56,33 +56,32 @@ class Embedding(NamedTuple):
     def __str__(self):
         return f"{self.name} ({self.modality.name})"
 
-def compare_cosine_similarity(entities: List[Entity]):
+def get_embeddings(entities: List[Entity]):
     embeddings = []
     for entity in entities:
         if entity.image_path:
-            embedding = get_embedding(image_path=f'samples/{entity.image_path}')
+            embedding = get_embedding(image_path=entity.image_path)
             embeddings.append(Embedding(name=entity.name, modality=Modality.Image, embedding=embedding))
         if entity.text:
             embedding = get_embedding(text=entity.text)
             embeddings.append(Embedding(name=entity.name, modality=Modality.Text, embedding=embedding))
-
-    similarities = []
-    for i in range(len(embeddings)):
-        for j in range(i+1, len(embeddings)):
-            sim = cosine_similarity(embeddings[i].embedding, embeddings[j].embedding)
-            similarities.append(((embeddings[i], embeddings[j]), sim))
-
-    # Sort the similarities in descending order
-    similarities.sort(key=lambda x: x[1], reverse=True)
-
-    for pair, sim in similarities:
-        print(f"Cosine similarity between {pair[0]} and {pair[1]}: {sim:.4f}")
+    return embeddings
 
 if __name__ == '__main__':
+    entities = []
 
-    entities = [
-        Entity(name='apple', image_path='apple.png', text='apple'),
-        Entity(name='ginkgo1', image_path='ginkgo1.png', text='ginkgo'),
-        Entity(name='ginkgo2', image_path='ginkgo2.png', text='maidenhair tree'),
-    ]
-    compare_cosine_similarity(entities)
+    with open("captions.json", "r") as f:
+        captions = json.load(f)
+        for id, caption in captions.items():
+            for i in range(1, 7):
+                entities.append(Entity(name=f'{id}_image_{i}', image_path=f'snapshots/{id}_{i}.png'))
+            entities.append(Entity(name=f'{id}_text', text=caption))
+
+    embeddings = get_embeddings(entities)
+
+    embs = {}
+    for embedding in embeddings:
+        embs[embedding.name] = embedding.embedding
+
+    with open("embeddings.json", "w") as f:
+        json.dump(embs, f, indent=4)
