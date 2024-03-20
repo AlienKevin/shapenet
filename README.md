@@ -6,3 +6,20 @@ conda create -n shapenet -c conda-forge pyopengl pyopengl-accelerate pillow assi
 ```
 python -m pip install pyassimp
 ```
+
+# Set up Clipasso
+
+1. Install replicate
+```
+python -m pip install replicate
+```
+
+2. Export api token
+```
+export REPLICATE_API_TOKEN=r8_HvGxxx
+```
+
+3. Run cilpasso
+```
+python clipasso.py
+```
