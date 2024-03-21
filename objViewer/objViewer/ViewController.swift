@@ -13,14 +13,14 @@ class ViewController: NSViewController {
             scene = SCNScene(named: "objs/02942699/\(obj_name)/models/model_normalized.obj")
             
             // Setup the scene view
-            sceneView = SCNView(frame: self.view.bounds)
+            sceneView = SCNView(frame: NSRect(origin: self.view.bounds.origin, size: CGSize(width: self.view.bounds.height, height: self.view.bounds.height)))
             sceneView.scene = scene
             self.view.addSubview(sceneView)
             
             // Add camera
             let cameraNode = SCNNode()
             cameraNode.camera = SCNCamera()
-            cameraNode.position = SCNVector3(x: 0, y: 0, z: 0.5)
+            cameraNode.position = SCNVector3(x: 0, y: 0, z: 0)
             scene.rootNode.addChildNode(cameraNode)
             sceneView.pointOfView = cameraNode
             
