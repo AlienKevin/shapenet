@@ -20,7 +20,7 @@ class ViewController: NSViewController {
             // Add camera
             let cameraNode = SCNNode()
             cameraNode.camera = SCNCamera()
-            cameraNode.position = SCNVector3(x: 0, y: 0, z: 1)
+            cameraNode.position = SCNVector3(x: 0, y: 0, z: 0.5)
             scene.rootNode.addChildNode(cameraNode)
             sceneView.pointOfView = cameraNode
             
@@ -28,7 +28,7 @@ class ViewController: NSViewController {
             let lightNode = SCNNode()
             lightNode.light = SCNLight()
             lightNode.light!.type = .omni
-            lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
+            lightNode.position = SCNVector3(x: 0, y: 20, z: -20)
             scene.rootNode.addChildNode(lightNode)
             
             // Add an ambient light
@@ -44,14 +44,12 @@ class ViewController: NSViewController {
     }
     
     func takeScreenshotsAroundObject(_ obj_name: String, _ cameraNode: SCNNode, _ sceneView: SCNView) {
-        let steps = 6
-        let fullCircle: CGFloat = .pi * 2
-        let stepAngle: CGFloat = fullCircle / CGFloat(steps)
+        let steps = [0, 30.0 / 90.0 * .pi/2, 75.0 / 90.0 * .pi/2]
         let radius: Float = 1.5
 
-        for step in 0..<steps {
+        for (step, angle) in steps.enumerated() {
             // Calculate the angle in radians
-            let angle = stepAngle * CGFloat(step)
+            let angle = -.pi / 2 + angle
             
             // Calculate the new camera position
             let x = radius * cos(Float(angle))
