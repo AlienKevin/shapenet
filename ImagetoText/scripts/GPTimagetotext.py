@@ -28,7 +28,8 @@ def main(image_path):
                 "content": [
                     {
                         "type": "text",
-                        "text": "Give me a short description of this image."
+                        # "text": "Give me a simple yet detailed search querry of this image focus on and key aspects of the image."
+                        "text": "Give me a simple and short description of this image. Focus on key aspects like shape and color. Make it a similar to a search querry."
                     },
                     {
                         "type": "image_url",
@@ -48,9 +49,14 @@ def main(image_path):
     # Extract the content portion of the output
     content = response_json['choices'][0]['message']['content']
 
+    # Create the output directory if it doesn't exist
+    output_dir = "../ImagetoTextOutput"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     # Construct the output file name
-    base_name = os.path.splitext(image_path)[0]
-    output_file_path = f"{base_name}.GPTdesc.output"
+    base_name = os.path.splitext(os.path.basename(image_path))[0]
+    output_file_path = os.path.join(output_dir, f"{base_name}_GPT4.npy")
 
     # Write the content to the output file
     with open(output_file_path, 'w') as file:

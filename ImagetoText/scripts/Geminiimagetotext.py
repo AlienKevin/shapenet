@@ -1,12 +1,13 @@
 from PIL import Image  # For image handling
 import google.generativeai as genai
 import sys  # For command-line arguments
+import os
 
 # Replace with your actual API key
 API_KEY = "AIzaSyD0aJ2ju1Tgi6tb6_KL28gh65eNQdHbWYA"
 
 # Predetermined prompt (replace with your desired prompt)
-PROMPT = "Write a short description of this image."
+PROMPT = "Give me a simple and short description of this image. Focus on key aspects like shape and color. Make it a similar to a search querry"
 
 def get_user_image(image_path):
     """Opens the image at the given path."""
@@ -38,7 +39,15 @@ def main():
     if image:
         answer = call_gemini(image, PROMPT)
 
-        output_filename = f"{image.filename}.gemini.output"
+        # Create the output directory if it doesn't exist
+        output_dir = "../ImagetoTextOutput"
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        # Construct the output file name
+        base_name = os.path.splitext(os.path.basename(image_path))[0]
+        output_filename = os.path.join(output_dir, f"{base_name}_Gemmini.npy")
+
         with open(output_filename, "w") as output_file:
             output_file.write(answer)
 
