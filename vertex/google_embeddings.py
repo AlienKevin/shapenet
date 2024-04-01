@@ -1,7 +1,9 @@
-import json
+import click
 import sys
 import vertexai
 from pathlib import Path
+import numpy as np
+import shutil
 
 from vertexai.vision_models import Image, MultiModalEmbeddingModel
 from vertexai.language_models import TextEmbeddingModel
@@ -11,106 +13,75 @@ REGION = "us-central1"
 
 vertexai.init(project=PROJECT_ID, location=REGION)
 
-def text_embeddings(text_json, model='textembedding-gecko@001'):
-    model = TextEmbeddingModel.from_pretrained(model) # load model
-    embeddings = {}
-    with open(text_json, 'r') as file: # load captions
-        captions = json.load(file)
+VERTEX_ROOT = Path(__file__).resolve().parent
 
-    for prefix, text in captions.items(): # get text embeddings
+def generate_text_embeddings(txt_dir, model):
+    model = MultiModalEmbeddingModel.from_pretrained(model)
+    text_output_directory = VERTEX_ROOT/f"{txt_dir.stem}_embeddings"
+    if text_output_directory.exists():
+        shutil.rmtree(text_output_directory)
+    text_output_directory.mkdir()
+    for file in txt_dir.iterdir():
         embedding = model.get_embeddings(
-            [text]
-        )[0].values
-        embeddings[prefix + '_text'] = embedding
-
-    # write to json
-    with open(f"{text_json.stem}.text.embeddings.json", 'w', encoding='utf-8') as file:
-        json.dump(embeddings, file, indent=4)
-
-def image_embeddings(input_directory, model='multimodalembedding', delimiter='_'):
-    model = MultiModalEmbeddingModel.from_pretrained(model) # load model
-    embeddings = {}
-    for path in input_directory.iterdir(): # get image embeddings
-        prefix, viewid = path.stem.rsplit(delimiter, 1)
-        embedding = model.get_embeddings(
-            image=Image.load_from_file(str(path)),
-        ).image_embedding
-        embeddings[prefix + '_image_' + viewid] = embedding
-
-    # write to json
-    with open(f"{input_directory}.image.embeddings.json", 'w', encoding='utf-8') as file:
-        json.dump(embeddings, file, indent=4)
-
-def multimodal_embeddings(text_json, image_directory, model='multimodalembedding', delimiter='_'):
-    model = MultiModalEmbeddingModel.from_pretrained(model) # load model
-    embeddings = {}
-    with open(text_json, 'r') as file: # load captions
-        captions = json.load(file)
-
-    for prefix, text in captions.items(): # get text embeddings
-        embedding = model.get_embeddings(
-            contextual_text=text
+            contextual_text=file.read_text()
         )
-        embeddings[prefix + '_text'] = embedding.text_embedding
 
-    for path in image_directory.iterdir(): # get image embeddings
-        prefix, viewid = path.stem.rsplit(delimiter, 1)
+        output_file = text_output_directory/f"{file.stem}.npy"
+        with output_file.open(mode='w') as file:
+            np.savetxt(file, embedding.text_embedding)
+
+def generate_image_embeddings(img_dir, model):
+    model = MultiModalEmbeddingModel.from_pretrained(model)
+    image_output_directory = VERTEX_ROOT/f"{img_dir.stem}_embeddings"
+    if image_output_directory.exists():
+        shutil.rmtree(image_output_directory)
+    image_output_directory.mkdir()
+    for file in img_dir.iterdir():
         embedding = model.get_embeddings(
-            image=Image.load_from_file(str(path))
+            image=Image.load_from_file(str(file))
         )
-        embeddings[prefix + '_image_' + viewid] = embedding.image_embedding
 
-    # write to json
-    with open(f"{image_directory}.{text_json.stem}.multimodal.embeddings.json", 'w', encoding='utf-8') as file:
-        json.dump(embeddings, file, indent=4)
+        output_file = image_output_directory/f"{file.stem}.npy"
+        with output_file.open(mode='w') as file:
+            np.savetxt(file, embedding.image_embedding)
 
-def main():
+def multimodal_embeddings(txt_dirs, img_dirs, model='multimodalembedding'):
+    for txt_dir in txt_dirs:
+        generate_text_embeddings(txt_dir, model)
+
+    for img_dir in img_dirs:
+        generate_image_embeddings(img_dir, model)
+    sys.exit(1)
+
+@click.command()
+@click.option('--img_dir', '-i', "img_dirs", default=None, multiple=True, help='Image Directory Path')
+@click.option('--txt_dir', '-t', "txt_dirs", default=None, multiple=True, help='Text Directory Path')
+def main(img_dirs, txt_dirs):
+    if img_dirs is None and txt_dirs is None:
+        print("No directory paths provided")
+        sys.exit(1)
+
     if PROJECT_ID is None:
         print("Set PROJECT_ID in google_embeddings.py")
         sys.exit(1)
 
-    try:
-        embedding_type = sys.argv[1]
-    except IndexError:
-        print("Usages:")
-        print("\tpython3 google_embeddings.py image image_directory")
-        print("\tpython3 google_embeddings.py text text_json")
-        print("\tpython3 google_embeddings.py multimodal text_json image_directory")
+    img_dirs = [Path()/img_dir for img_dir in img_dirs]
+    txt_dirs = [Path()/txt_dir for txt_dir in txt_dirs]
+
+    dne = []
+    for img_dir in img_dirs:
+        if not img_dir.exists():
+            dne.append(str(img_dir.resolve()))
+    for txt_dir in txt_dirs:
+        if not txt_dir.exists():
+            dne.append(str(txt_dir.resolve()))
+
+    if len(dne) > 0:
+        print("The following directories do not exist:")
+        print(('\n').join(dne))
         sys.exit(1)
 
-    if embedding_type not in ('image', 'text', 'multimodal'):
-        print(f"Invalid Embedding Type: {embedding_type}")
-        sys.exit(1)
-
-    if embedding_type == 'multimodal':
-        if len(sys.argv) != 4:
-            print("Usage: python3 google_embeddings.py multimodal text_json image_directory")
-            sys.exit(1)
-        text_directory = Path()/sys.argv[2]
-        image_directory = Path()/sys.argv[3]
-        if not text_directory.exists():
-            print(f"Path does not exist: {text_directory.resolve()}")
-            sys.exit(1)
-        elif not image_directory.exists():
-            print(f"Path does not exist: {image_directory.resolve()}")
-            sys.exit(1)
-
-        multimodal_embeddings(text_directory, image_directory) # generate multimodal embeddings
-    else:
-        if len(sys.argv) != 3:
-            print("Usages:")
-            print("\tpython3 google_embeddings.py image image_directory")
-            print("\tpython3 google_embeddings.py text text_json")
-            sys.exit(1)
-        input_path = Path()/sys.argv[2]
-        if not input_path.exists():
-            print(f"Path does not exist: {input_path.resolve()}")
-            sys.exit(1)
-
-        if embedding_type == 'image':
-            image_embeddings(input_path) # generate image embeddings
-        else:
-            text_embeddings(input_path) # generate text embeddings
+    multimodal_embeddings(txt_dirs, img_dirs)
 
 if __name__ == '__main__':
     main()
