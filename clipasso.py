@@ -40,8 +40,6 @@ for i, images in enumerate(groups):
 
 assert(len(image_names) == len(filtered_images) / 3)
 
-image_names = image_names[:10]
-
 import aiohttp
 
 async def download_image(session, url, path):
