@@ -2,7 +2,7 @@ import os
 import numpy as np
 import requests
 import argparse
-import json
+import hashlib
 
 # Argument parser setup
 parser = argparse.ArgumentParser(description='Vectorize local images and evaluate embeddings.')
@@ -36,39 +36,25 @@ def cosine_similarity(vec1, vec2):
     vec2 = np.array(vec2)
     return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
 
-def vectorize_images_in_folder(folder_path):
-    embeddings = {}
+def vectorize_images_in_folder(folder_path, embeddings_folder="embeddings"):
+    os.makedirs(embeddings_folder, exist_ok=True)
+
     for filename in os.listdir(folder_path):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
             img_path = os.path.join(folder_path, filename)
             print(f"Processing {filename}...")
             image_vector = get_image_embedding(img_path)
             if image_vector:
-                embeddings[filename] = image_vector
-                print(f"Vector obtained for {filename}.")
+                # Generate a hash of the filename for a unique but consistent identifier
+                filename_hash = hashlib.md5(filename.encode()).hexdigest()
+                # Save each embedding in a separate .txt file
+                embedding_file_path = os.path.join(embeddings_folder, f"{filename_hash}_Azure_camera.npy")
+                with open(embedding_file_path, "w") as file:
+                    for value in image_vector:
+                        file.write(f"{value}\n")
+                print(f"Vector saved for {filename} as {embedding_file_path}.")
             else:
                 print(f"Failed to get vector for {filename}.")
-    return embeddings
-
-def save_embeddings_to_json(embeddings, output_file="embeddings.json"):
-    with open(output_file, "w") as file:
-        json.dump(embeddings, file)
-
-def load_embeddings_from_json(input_file="embeddings.json"):
-    with open(input_file, "r") as file:
-        return json.load(file)
-
-
-def calculate_similarities(embeddings):
-    filenames = list(embeddings.keys())
-    with open("similarities.txt", 'w') as f:
-        for i in range(len(filenames)):
-            for j in range(i+1, len(filenames)):
-                sim = cosine_similarity(embeddings[filenames[i]], embeddings[filenames[j]])
-                f.write(f"Cosine similarity between {filenames[i]} and {filenames[j]}: {sim}\n")
 
 if __name__ == "__main__":
-    embeddings = vectorize_images_in_folder(args.folder_path)
-    save_embeddings_to_json(embeddings)
-    embeddings_loaded = load_embeddings_from_json()
-    calculate_similarities(embeddings_loaded)
+    vectorize_images_in_folder(args.folder_path)
