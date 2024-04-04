@@ -9,7 +9,7 @@ def load_embedding(file_path):
 def compute_cosine_similarity(vec1, vec2):
     return 1 - cosine(vec1, vec2)
 
-def get_ranked_snapshots(query_id, k=10):
+def get_ranked_snapshots(query_id, k, image_weight, text_weight):
     print(query_id)
     sketch_embedding_path = f"vertex/sketches-png_embeddings/{query_id}.npy"
     sketch_embedding = load_embedding(sketch_embedding_path)
@@ -37,7 +37,7 @@ def get_ranked_snapshots(query_id, k=10):
             print(f"Gemini embedding not found for snapshot {snapshot_id}")
             text_similarity_score = 0
         
-        weighted_similarity_score = 0.5 * image_similarity_score + 0.5 * text_similarity_score
+        weighted_similarity_score = image_weight * image_similarity_score + text_weight * text_similarity_score
         similarity_scores.append((snapshot_id, weighted_similarity_score))
     
     # Sort based on similarity score in descending order
@@ -49,13 +49,15 @@ def main():
     parser = argparse.ArgumentParser(description='Find closest snapshots to a given sketch.')
     parser.add_argument('query_id', type=str, help='ID of the sketch and text')
     parser.add_argument('--k', type=int, default=10, help='Number of top results to return')
+    parser.add_argument('--image_weight', type=float, default=0.5, help='Weight of image similarity')
+    parser.add_argument('--text_weight', type=float, default=0.5, help='Weight of text similarity')
     
     args = parser.parse_args()
     
     import matplotlib.pyplot as plt
     from matplotlib.widgets import Slider
     
-    ranked_snapshots = get_ranked_snapshots(args.query_id, args.k)
+    ranked_snapshots = get_ranked_snapshots(args.query_id, args.k, args.image_weight, args.text_weight)
     
     # Create figure and axis
     fig, ax = plt.subplots(figsize=(10, 8))
