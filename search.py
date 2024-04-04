@@ -9,11 +9,16 @@ def load_embedding(file_path):
 def compute_cosine_similarity(vec1, vec2):
     return 1 - cosine(vec1, vec2)
 
-def get_ranked_snapshots(sketch_id, k=10):
-    sketch_embedding_path = f"vertex/sketches-png_embeddings/{sketch_id}.npy"
+def get_ranked_snapshots(query_id, k=10):
+    print(query_id)
+    sketch_embedding_path = f"vertex/sketches-png_embeddings/{query_id}.npy"
     sketch_embedding = load_embedding(sketch_embedding_path)
     
+    text_embedding_path = f"vertex/ImagetoTextOutput_embeddings/{query_id}_GPT4.npy"
+    text_embedding = load_embedding(text_embedding_path)
+    
     snapshot_embeddings_dir = "vertex/camera_embeddings/"
+    system_text_embeddings_dir = "vertex/ImagetoTextOutput_embeddings/"
     similarity_scores = []
     
     for snapshot_file in os.listdir(snapshot_embeddings_dir):
@@ -21,8 +26,19 @@ def get_ranked_snapshots(sketch_id, k=10):
         snapshot_embedding_path = os.path.join(snapshot_embeddings_dir, snapshot_file)
         snapshot_embedding = load_embedding(snapshot_embedding_path)
         
-        similarity_score = compute_cosine_similarity(sketch_embedding, snapshot_embedding)
-        similarity_scores.append((snapshot_id, similarity_score))
+        system_text_embedding_path = os.path.join(system_text_embeddings_dir, f"{snapshot_id}_Gemmini.npy")
+
+        image_similarity_score = compute_cosine_similarity(sketch_embedding, snapshot_embedding)
+        
+        if os.path.exists(system_text_embedding_path):
+            system_text_embedding = load_embedding(system_text_embedding_path)
+            text_similarity_score = compute_cosine_similarity(text_embedding, system_text_embedding)
+        else:
+            print(f"Gemini embedding not found for snapshot {snapshot_id}")
+            text_similarity_score = 0
+        
+        weighted_similarity_score = 0.5 * image_similarity_score + 0.5 * text_similarity_score
+        similarity_scores.append((snapshot_id, weighted_similarity_score))
     
     # Sort based on similarity score in descending order
     ranked_snapshots = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
@@ -31,7 +47,7 @@ def get_ranked_snapshots(sketch_id, k=10):
 
 def main():
     parser = argparse.ArgumentParser(description='Find closest snapshots to a given sketch.')
-    parser.add_argument('sketch_id', type=str, help='ID of the sketch')
+    parser.add_argument('query_id', type=str, help='ID of the sketch and text')
     parser.add_argument('--k', type=int, default=10, help='Number of top results to return')
     
     args = parser.parse_args()
@@ -39,7 +55,7 @@ def main():
     import matplotlib.pyplot as plt
     from matplotlib.widgets import Slider
     
-    ranked_snapshots = get_ranked_snapshots(args.sketch_id, args.k)
+    ranked_snapshots = get_ranked_snapshots(args.query_id, args.k)
     
     # Create figure and axis
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -71,4 +87,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
