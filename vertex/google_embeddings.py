@@ -6,10 +6,9 @@ import numpy as np
 import shutil
 
 from vertexai.vision_models import Image, MultiModalEmbeddingModel
-from vertexai.language_models import TextEmbeddingModel
 
-PROJECT_ID = 'eecs-486-417920'
-REGION = "us-central1"
+PROJECT_ID = ''
+REGION = ""
 
 vertexai.init(project=PROJECT_ID, location=REGION)
 
