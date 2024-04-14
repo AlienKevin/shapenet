@@ -40,7 +40,7 @@ def main():
         answer = call_gemini(image, PROMPT)
 
         # Create the output directory if it doesn't exist
-        output_dir = "../ImagetoTextOutput"
+        output_dir = "../SketchesImagetoTextOutput"
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 

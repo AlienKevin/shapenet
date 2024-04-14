@@ -50,7 +50,7 @@ def main(image_path):
     content = response_json['choices'][0]['message']['content']
 
     # Create the output directory if it doesn't exist
-    output_dir = "../ImagetoTextOutput"
+    output_dir = "../SketchesImagetoTextOutput"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
