@@ -1,7 +1,15 @@
-# Set up
+# Main Experiment Setup
 ```
-conda create -n shapenet -c conda-forge tqdm scipy numpy
+conda create -n multimodal3d -c conda-forge tqdm scipy numpy matplotlib
+conda activate multimodal3d
 ```
+
+# Run main experiment
+You can generate the main experiment plot by running:
+```
+python search.py --approach all --k 1
+```
+In the paper, we vary k to be 1, 5, and 10 to analyze precision at different values of top k.
 
 # Set up Clipasso
 
