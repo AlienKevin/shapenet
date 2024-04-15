@@ -86,13 +86,13 @@ def main():
 
     k = 10
 
-    if args.approach == 'weighted_sum':
-        query_ids = []
+    query_ids = []
 
-        for root, dirs, files in os.walk('vertex/sketches-png_embeddings'):
-            for file in files:
-                query_ids.append(Path(file).stem)
-        
+    for root, dirs, files in os.walk('vertex/sketches-png_embeddings'):
+        for file in files:
+            query_ids.append(Path(file).stem)
+
+    if args.approach == 'weighted_sum':
         weight_steps = 10
 
         weighted_sum_top_k_hits = defaultdict(int)
@@ -104,7 +104,7 @@ def main():
             from functools import partial
 
             with Pool() as p:
-                weighted_sum_top_k_hits[image_weight] = sum(p.map(partial(process_query_id, k=k, approach=Approach.WeightedSum(image_weight, text_weight)), query_ids))
+                weighted_sum_top_k_hits[image_weight] = sum(p.map(partial(process_query_id, k=k, approach=WeightedSum(image_weight, text_weight)), query_ids))
 
         print(weighted_sum_top_k_hits)
 
@@ -119,12 +119,6 @@ def main():
         plt.title('Top k Hits vs Image Weight')
         plt.savefig('weighted_sum_top_k_hits.png')
     elif args.approach == 'crossmodal' or args.approach == 'image_to_text':
-        query_ids = []
-
-        for root, dirs, files in os.walk('vertex/sketches-png_embeddings'):
-            for file in files:
-                query_ids.append(Path(file).stem)
-        
         top_k_hits = 0
 
         approach = CrossModal() if args.approach == 'crossmodal' else ImageToText()
@@ -136,8 +130,6 @@ def main():
             top_k_hits = sum(p.map(partial(process_query_id, k=k, approach=approach), query_ids))
 
         print(f"Top k hits for {args.approach} search: {top_k_hits}")
-    elif args.approach == 'image_to_text':
-        pass
 
 if __name__ == "__main__":
     main()
