@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 import os
 from scipy.spatial.distance import cosine
@@ -11,7 +12,7 @@ def load_embedding(file_path):
 def compute_cosine_similarity(vec1, vec2):
     return 1 - cosine(vec1, vec2)
 
-def get_ranked_snapshots(query_id, k, image_weight, text_weight):
+def get_ranked_snapshots(query_id, k, image_weight, text_weight, is_crossmodal):
     sketch_embedding_path = f"vertex/sketches-png_embeddings/{query_id}.npy"
     sketch_embedding = load_embedding(sketch_embedding_path)
     
@@ -29,64 +30,98 @@ def get_ranked_snapshots(query_id, k, image_weight, text_weight):
         
         system_text_embedding_path = os.path.join(system_text_embeddings_dir, f"{snapshot_id}_Gemmini.npy")
 
-        image_similarity_score = compute_cosine_similarity(sketch_embedding, snapshot_embedding)
-        
-        if os.path.exists(system_text_embedding_path):
-            system_text_embedding = load_embedding(system_text_embedding_path)
-            text_similarity_score = compute_cosine_similarity(text_embedding, system_text_embedding)
+        if is_crossmodal:
+            if os.path.exists(system_text_embedding_path):
+                system_text_embedding = load_embedding(system_text_embedding_path)
+                sketch_system_text_similarity_score = compute_cosine_similarity(sketch_embedding, system_text_embedding)
+            else:
+                # print(f"Gemini embedding not found for snapshot {snapshot_id}")
+                sketch_system_text_similarity_score = 0
+            similarity_score = max(sketch_system_text_similarity_score, compute_cosine_similarity(text_embedding, snapshot_embedding))
         else:
-            # print(f"Gemini embedding not found for snapshot {snapshot_id}")
-            text_similarity_score = 0
-        
-        weighted_similarity_score = image_weight * image_similarity_score + text_weight * text_similarity_score
-        similarity_scores.append((snapshot_id.split('_')[0], weighted_similarity_score))
+            image_similarity_score = compute_cosine_similarity(sketch_embedding, snapshot_embedding)
+            
+            if os.path.exists(system_text_embedding_path):
+                system_text_embedding = load_embedding(system_text_embedding_path)
+                text_similarity_score = compute_cosine_similarity(text_embedding, system_text_embedding)
+            else:
+                # print(f"Gemini embedding not found for snapshot {snapshot_id}")
+                text_similarity_score = 0
+            
+            similarity_score = image_weight * image_similarity_score + text_weight * text_similarity_score
+        similarity_scores.append((snapshot_id.split('_')[0], similarity_score))
     
     # Sort based on similarity score in descending order
     ranked_snapshots = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
     
     return ranked_snapshots[:k]
 
-def process_query_id(query_id, k, image_weight, text_weight):
+def process_query_id(query_id, k, image_weight=0, text_weight=1, is_crossmodal=False):
     expected_snapshot_id = query_id.split('_')[0]
-    ranked_snapshots = get_ranked_snapshots(query_id=query_id, k=k, image_weight=image_weight, text_weight=text_weight)
+    ranked_snapshots = get_ranked_snapshots(query_id=query_id, k=k, image_weight=image_weight, text_weight=text_weight, is_crossmodal=is_crossmodal)
     if any(snapshot_id == expected_snapshot_id for snapshot_id, _ in ranked_snapshots):
         return 1
     else:
         return 0
 
 def main():
-    query_ids = []
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument('--approach', type=str, default='weighted_sum', help='Approach to use for search', choices=['weighted_sum', 'crossmodal', 'image_to_text'])
 
-    for root, dirs, files in os.walk('vertex/sketches-png_embeddings'):
-        for file in files:
-            query_ids.append(Path(file).stem)
-    
+    args = argparser.parse_args()
+
     k = 10
-    weight_steps = 10
 
-    weighted_sum_top_k_hits = defaultdict(int)
+    if args.approach == 'weighted_sum':
+        query_ids = []
 
-    for step in tqdm(range(0, weight_steps + 1)):
-        image_weight = step / weight_steps
-        text_weight = 1 - image_weight
+        for root, dirs, files in os.walk('vertex/sketches-png_embeddings'):
+            for file in files:
+                query_ids.append(Path(file).stem)
+        
+        weight_steps = 10
+
+        weighted_sum_top_k_hits = defaultdict(int)
+
+        for step in tqdm(range(0, weight_steps + 1)):
+            image_weight = step / weight_steps
+            text_weight = 1 - image_weight
+            from multiprocessing import Pool
+            from functools import partial
+
+            with Pool() as p:
+                weighted_sum_top_k_hits[image_weight] = sum(p.map(partial(process_query_id, k=k, image_weight=image_weight, text_weight=text_weight), query_ids))
+
+        print(weighted_sum_top_k_hits)
+
+        import matplotlib.pyplot as plt
+
+        x = list(weighted_sum_top_k_hits.keys())
+        y = list(weighted_sum_top_k_hits.values())
+
+        plt.plot(x, y)
+        plt.xlabel('Weight')
+        plt.ylabel('Top k Hits')
+        plt.title('Top k Hits vs Image Weight')
+        plt.savefig('weighted_sum_top_k_hits.png')
+    elif args.approach == 'crossmodal':
+        query_ids = []
+
+        for root, dirs, files in os.walk('vertex/sketches-png_embeddings'):
+            for file in files:
+                query_ids.append(Path(file).stem)
+        
+        crossmodal_top_k_hits = 0
+
         from multiprocessing import Pool
         from functools import partial
 
         with Pool() as p:
-            weighted_sum_top_k_hits[image_weight] = sum(p.map(partial(process_query_id, k=k, image_weight=image_weight, text_weight=text_weight), query_ids))
+            crossmodal_top_k_hits = sum(p.map(partial(process_query_id, k=k, is_crossmodal=True), query_ids))
 
-    print(weighted_sum_top_k_hits)
-
-    import matplotlib.pyplot as plt
-
-    x = list(weighted_sum_top_k_hits.keys())
-    y = list(weighted_sum_top_k_hits.values())
-
-    plt.plot(x, y)
-    plt.xlabel('Weight')
-    plt.ylabel('Top k Hits')
-    plt.title('Top k Hits vs Image Weight')
-    plt.show()
+        print(f"Top k hits for crossmodal search: {crossmodal_top_k_hits}")
+    elif args.approach == 'image_to_text':
+        pass
 
 if __name__ == "__main__":
     main()
