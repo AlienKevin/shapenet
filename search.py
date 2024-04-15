@@ -117,13 +117,12 @@ def eval_single_config(query_ids, k, approach):
 def main():
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--approach', type=str, default='weighted_sum', help='Approach to use for search', choices=['weighted_sum', 'crossmodal', 'image_to_text', 'all'])
-
+    argparser.add_argument('--k', type=int, default=10, help='Top K hits to consider for evaluation')
     args = argparser.parse_args()
 
-    k = 10
+    k = args.k
 
     query_ids = []
-
     for root, dirs, files in os.walk('vertex/sketches-png_embeddings'):
         for file in files:
             query_ids.append(Path(file).stem)
@@ -160,7 +159,7 @@ def main():
         plt.xlabel('Image Weight')
         plt.ylabel(f'Percent Top {k} Hits')
         plt.title(f'Percent Top {k} Hits')
-        plt.legend()
+        plt.legend(loc='center left')
         plt.savefig(f'percent_top_{k}_hits.png')
 
 if __name__ == "__main__":
