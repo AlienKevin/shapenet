@@ -1,7 +1,9 @@
 import numpy as np
 import os
-import argparse
 from scipy.spatial.distance import cosine
+from pathlib import Path
+from collections import defaultdict
+from tqdm import tqdm
 
 def load_embedding(file_path):
     return np.loadtxt(file_path)
@@ -10,7 +12,6 @@ def compute_cosine_similarity(vec1, vec2):
     return 1 - cosine(vec1, vec2)
 
 def get_ranked_snapshots(query_id, k, image_weight, text_weight):
-    print(query_id)
     sketch_embedding_path = f"vertex/sketches-png_embeddings/{query_id}.npy"
     sketch_embedding = load_embedding(sketch_embedding_path)
     
@@ -34,57 +35,57 @@ def get_ranked_snapshots(query_id, k, image_weight, text_weight):
             system_text_embedding = load_embedding(system_text_embedding_path)
             text_similarity_score = compute_cosine_similarity(text_embedding, system_text_embedding)
         else:
-            print(f"Gemini embedding not found for snapshot {snapshot_id}")
+            # print(f"Gemini embedding not found for snapshot {snapshot_id}")
             text_similarity_score = 0
         
         weighted_similarity_score = image_weight * image_similarity_score + text_weight * text_similarity_score
-        similarity_scores.append((snapshot_id, weighted_similarity_score))
+        similarity_scores.append((snapshot_id.split('_')[0], weighted_similarity_score))
     
     # Sort based on similarity score in descending order
     ranked_snapshots = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
     
     return ranked_snapshots[:k]
 
+def process_query_id(query_id, k, image_weight, text_weight):
+    expected_snapshot_id = query_id.split('_')[0]
+    ranked_snapshots = get_ranked_snapshots(query_id=query_id, k=k, image_weight=image_weight, text_weight=text_weight)
+    if any(snapshot_id == expected_snapshot_id for snapshot_id, _ in ranked_snapshots):
+        return 1
+    else:
+        return 0
+
 def main():
-    parser = argparse.ArgumentParser(description='Find closest snapshots to a given sketch.')
-    parser.add_argument('query_id', type=str, help='ID of the sketch and text')
-    parser.add_argument('--k', type=int, default=10, help='Number of top results to return')
-    parser.add_argument('--image_weight', type=float, default=0.5, help='Weight of image similarity')
-    parser.add_argument('--text_weight', type=float, default=0.5, help='Weight of text similarity')
+    query_ids = []
+
+    for root, dirs, files in os.walk('vertex/sketches-png_embeddings'):
+        for file in files:
+            query_ids.append(Path(file).stem)
     
-    args = parser.parse_args()
-    
+    k = 10
+    weight_steps = 10
+
+    weighted_sum_top_k_hits = defaultdict(int)
+
+    for step in tqdm(range(0, weight_steps + 1)):
+        image_weight = step / weight_steps
+        text_weight = 1 - image_weight
+        from multiprocessing import Pool
+        from functools import partial
+
+        with Pool() as p:
+            weighted_sum_top_k_hits[image_weight] = sum(p.map(partial(process_query_id, k=k, image_weight=image_weight, text_weight=text_weight), query_ids))
+
+    print(weighted_sum_top_k_hits)
+
     import matplotlib.pyplot as plt
-    from matplotlib.widgets import Slider
-    
-    ranked_snapshots = get_ranked_snapshots(args.query_id, args.k, args.image_weight, args.text_weight)
-    
-    # Create figure and axis
-    fig, ax = plt.subplots(figsize=(10, 8))
-    plt.subplots_adjust(left=0.25, bottom=0.25)
-    
-    # Initially display the first image
-    snapshot_id, score = ranked_snapshots[0]
-    img = plt.imread(f'snapshots/camera/{snapshot_id}.png')
-    im_display = ax.imshow(img)
-    ax.set_title(f"Snapshot ID: {snapshot_id}, Similarity Score: {score}")
-    ax.axis('off')  # Hide axes
-    
-    # Slider
-    axcolor = 'lightgoldenrodyellow'
-    ax_slider = plt.axes([0.25, 0.1, 0.65, 0.03], facecolor=axcolor)
-    slider = Slider(ax_slider, 'Snapshot', 0, len(ranked_snapshots)-1, valinit=0, valfmt='%0.0f')
-    
-    def update(val):
-        index = int(slider.val)
-        snapshot_id, score = ranked_snapshots[index]
-        img = plt.imread(f'snapshots/camera/{snapshot_id}.png')
-        im_display.set_data(img)
-        ax.set_title(f"Snapshot ID: {snapshot_id}, Similarity Score: {score}")
-        fig.canvas.draw_idle()
-    
-    slider.on_changed(update)
-    
+
+    x = list(weighted_sum_top_k_hits.keys())
+    y = list(weighted_sum_top_k_hits.values())
+
+    plt.plot(x, y)
+    plt.xlabel('Weight')
+    plt.ylabel('Top k Hits')
+    plt.title('Top k Hits vs Image Weight')
     plt.show()
 
 if __name__ == "__main__":
