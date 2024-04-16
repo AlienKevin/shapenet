@@ -10,8 +10,8 @@ parser.add_argument('folder_path', type=str, help='Path to the folder containing
 args = parser.parse_args()
 
 # Azure Cognitive Services credentials and endpoint
-endpoint = os.getenv("VISION_ENDPOINT", xxx")
-key = os.getenv("VISION_KEY", "xxx")
+endpoint = os.getenv("VISION_ENDPOINT", "https://image-recog.cognitiveservices.azure.com/")
+key = os.getenv("VISION_KEY", "fb717a91a8d6419482be08619d1a4b48")
 
 def get_image_embedding(image_path):
     vectorize_img_url = f"{endpoint}/computervision/retrieval:vectorizeImage?api-version=2023-02-01-preview&model-version=2023-04-15"
