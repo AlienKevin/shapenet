@@ -4,7 +4,7 @@ import sys  # For command-line arguments
 import os
 
 # Replace with your actual API key
-API_KEY = "AIzaSyD0aJ2ju1Tgi6tb6_KL28gh65eNQdHbWYA"
+API_KEY = "Insert API Key"
 
 # Predetermined prompt (replace with your desired prompt)
 PROMPT = "Give me a simple and short description of this image. Focus on key aspects like shape and color. Make it a similar to a search querry"
@@ -40,7 +40,7 @@ def main():
         answer = call_gemini(image, PROMPT)
 
         # Create the output directory if it doesn't exist
-        output_dir = "../SketchesImagetoTextOutput"
+        output_dir = "../ManualSketchesImagetoTextOutput"
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 

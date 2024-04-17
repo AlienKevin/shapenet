@@ -4,7 +4,7 @@ import sys
 import os
 
 # OpenAI API Key
-api_key = "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"
+api_key = "InsertAPIKey"
 
 # Function to encode the image
 def encode_image(image_path):
@@ -50,7 +50,7 @@ def main(image_path):
     content = response_json['choices'][0]['message']['content']
 
     # Create the output directory if it doesn't exist
-    output_dir = "../SketchesImagetoTextOutput"
+    output_dir = "../ManualSketchesImagetoTextOutput"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
