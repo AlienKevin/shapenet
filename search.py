@@ -150,22 +150,38 @@ def main():
         top_k_hits = eval_single_config(query_ids, k, approach, embedding_model, is_human)
         print(f"Top k hits for {args.approach} search: {top_k_hits}")
     elif args.approach == 'all':
-        weighted_sum_top_k_hits = eval_weighted_sum(query_ids, k, embedding_model, is_human)
+        blue = '#1D91C0'
+        purple = '#8C4F8C'
+        orange = '#CC5500'
+        title_font_size = 20
+        legend_font_size = 14
 
-        x = list(weighted_sum_top_k_hits.keys())
-        y = [hits / len(query_ids) for hits in weighted_sum_top_k_hits.values()]
+        human_weighted_sum_top_k_hits = eval_weighted_sum(query_ids, k, embedding_model, is_human=True)
+        human_x = list(human_weighted_sum_top_k_hits.keys())
+        human_y = [hits / len(query_ids) for hits in human_weighted_sum_top_k_hits.values()]
+        human_crossmodal_top_k_hits = eval_single_config(query_ids, k, CrossModal(), embedding_model, is_human=True) / len(query_ids)
+        human_image_to_text_top_k_hits = eval_single_config(query_ids, k, ImageToText(), embedding_model, is_human=True) / len(query_ids)
+        plt.plot(human_x, human_y, label='Weighted Sum (human)', color=blue, linestyle='-')
+        plt.axhline(human_crossmodal_top_k_hits, linestyle='-', color=purple, label='Crossmodal (human)')
+        plt.axhline(human_image_to_text_top_k_hits, linestyle='-', color=orange, label='Image to Text (human)')
 
-        crossmodal_top_k_hits = eval_single_config(query_ids, k, CrossModal(), embedding_model, is_human) / len(query_ids)
-        image_to_text_top_k_hits = eval_single_config(query_ids, k, ImageToText(), embedding_model, is_human) / len(query_ids)
-
-        plt.plot(x, y, label='Weighted Sum')
-        plt.axhline(crossmodal_top_k_hits, linestyle='-', color='green', label='Crossmodal')
-        plt.axhline(image_to_text_top_k_hits, linestyle='-', color='red', label='Image to Text')
-        plt.xlabel('Image Weight')
-        plt.ylabel(f'Percent Top {k} Hits')
-        plt.title(f'Percent Top {k} Hits')
-        plt.legend(loc='center left')
-        plt.savefig(f'percent_top_{k}_hits_{embedding_model}_{'human' if is_human else 'machine'}.png')
+        machine_weighted_sum_top_k_hits = eval_weighted_sum(query_ids, k, embedding_model, is_human=False)
+        machine_x = list(machine_weighted_sum_top_k_hits.keys())
+        machine_y = [hits / len(query_ids) for hits in machine_weighted_sum_top_k_hits.values()]
+        machine_crossmodal_top_k_hits = eval_single_config(query_ids, k, CrossModal(), embedding_model, is_human=False) / len(query_ids)
+        machine_image_to_text_top_k_hits = eval_single_config(query_ids, k, ImageToText(), embedding_model, is_human=False) / len(query_ids)
+        plt.plot(machine_x, machine_y, label='Weighted Sum (machine)', color=blue, linestyle='--')
+        plt.axhline(machine_crossmodal_top_k_hits, linestyle='--', color=purple, label='Crossmodal (machine)')
+        plt.axhline(machine_image_to_text_top_k_hits, linestyle='--', color=orange, label='Image to Text (machine)')
+        
+        plt.ylim(0, 1)
+        plt.xlabel('Image Weight', fontsize=legend_font_size)
+        plt.xticks(fontsize=legend_font_size)
+        plt.ylabel(f'Percent Top {k} Hits', fontsize=legend_font_size)
+        plt.yticks(fontsize=legend_font_size)
+        plt.title(f'Percent Top {k} Hits', fontsize=title_font_size)
+        plt.legend(loc='upper left' if k < 10 else 'lower left')
+        plt.savefig(f'percent_top_{k}_hits_{embedding_model}.png')
 
 if __name__ == "__main__":
     main()
