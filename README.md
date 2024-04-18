@@ -47,6 +47,25 @@ You should see a plot named `percent_top_1_hits_vertex.png` as a result.
 In the paper, we vary k to be `1`, `5`, and `10` to analyze precision at different values of top k.
 We also experiment with embedding_model to be `vertex` and `azure`.
 
+You can compare the percent hits performance of text-only, sketch-only, and weighted-sum (image-weight=0.6) by running:
+```
+python calculate_percent_increase.py
+```
+Expected output is:
+```
+K = 1
+Percent increase from text-only to image-weight=0.6: 48%
+Percent increase from sketch-only to image-weight=0.6: 34%
+K = 5
+Percent increase from text-only to image-weight=0.6: 39%
+Percent increase from sketch-only to image-weight=0.6: 13%
+K = 10
+Percent increase from text-only to image-weight=0.6: 20%
+Percent increase from sketch-only to image-weight=0.6: 10%
+```
+Note that the experiments results are hard coded into this script. To use the values you got from running the main experiment, you can
+overwrite the `k1_human_weighted_sum_top_k_hits` and `k1_machine_weighted_sum_top_k_hits` etc in `calculate_percent_increase.py`.
+
 # Generate snapshots (macOS only)
 We had trouble finding reliable OBJ renderers in Python, so we resort to using macOS's SceneKit to render OBJ files into snapshot images in Swift.
 

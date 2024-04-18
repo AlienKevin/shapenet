@@ -165,6 +165,8 @@ def main():
         plt.axhline(human_crossmodal_top_k_hits, linestyle='-', color=purple, label='Crossmodal (human)')
         plt.axhline(human_image_to_text_top_k_hits, linestyle='-', color=orange, label='Image to Text (human)')
 
+        print("human_weighted_sum_top_k_hits: ", human_y)
+
         machine_weighted_sum_top_k_hits = eval_weighted_sum(query_ids, k, embedding_model, is_human=False)
         machine_x = list(machine_weighted_sum_top_k_hits.keys())
         machine_y = [hits / len(query_ids) for hits in machine_weighted_sum_top_k_hits.values()]
@@ -173,6 +175,8 @@ def main():
         plt.plot(machine_x, machine_y, label='Weighted Sum (machine)', color=blue, linestyle='--')
         plt.axhline(machine_crossmodal_top_k_hits, linestyle='--', color=purple, label='Crossmodal (machine)')
         plt.axhline(machine_image_to_text_top_k_hits, linestyle='--', color=orange, label='Image to Text (machine)')
+
+        print("machine_weighted_sum_top_k_hits: ", machine_y)
         
         plt.ylim(0, 1)
         plt.xlabel('Image Weight', fontsize=legend_font_size)
