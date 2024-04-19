@@ -17,7 +17,7 @@ You can find the hand-drawn sketches under `sketches-manual-png/`. The manual sk
 ## Captions
 We generate two types of captions for the snapshots. One is the system description of each snapshot used internally for retrieval. The other is a simulated user query looking for a shape. We also manually write user queries for a shape. To simulate user queries in a different style from system descriptions, we use two distinct LLMs to generate each caption. We use Gemini 1.0 Pro Vision for the system descriptions and GPT-4 Vision for the simulated user queries.
 
-The system descriptions and simulated user queries can be found under `ImagetoText/ImagetoTextOutput/` where the file names follow the format of `{shape_id}_{angle_id}_{caption_llm}`. You can find the manually-written user queries under `snapshots/camera_queries/` where the file names follow the format of `{shape_id}.txt`.
+The system descriptions and simulated user queries can be found under `ImagetoText/ImagetoTextOutput/` where the file names follow the format of `{shape_id}_{angle_id}_{caption_llm}`. You can find the manually-written user queries under `snapshots/camera_queries/` where the file names follow the format of `{shape_id}.txt`. The `ImagetoText/` folder also contains scripts used to generate those embeddings. See the `ImagetoText/README.txt` for details.
 
 To experiment if we can convert all modalities to text and compute similarities using text embeddings alone, we also generate captions for sketches. You can find the captions for the CLIPasso-generated sketches under `ImagetoText/SketchesImagetoTextOutput/` and the hand-drawn sketches under `ImagetoText/ManualSketchesImagetoTextOutput`. These two folders have identical folder structure:
 - `camera_embeddings`: embeddings for snapshots
@@ -29,7 +29,7 @@ To experiment if we can convert all modalities to text and compute similarities 
 - `SketchesImagetoTextOutput_embeddings`: embeddings for captions of CLIPasso-generated sketches
 
 ## Text and Image Embeddings
-We generate text and image embeddings using two off-the-shelf multimodal embedding models. You can find the Microsoft Azure embeddings under `azure/` and the Google Vertex embeddings under `vertex/`.
+We generate text and image embeddings using two off-the-shelf multimodal embedding models. You can find the Microsoft Azure embeddings under `azure/` and the Google Vertex embeddings under `vertex/`. The `azure/` and `vertex/` folders also contain scripts used to generate those embeddings. See the `README.md` in each folder for details.
 
 # Environment Setup
 ```
@@ -37,6 +37,7 @@ conda create -n multimodal3d -c conda-forge python=3.12 tqdm scipy numpy matplot
 conda activate multimodal3d
 python -m pip install -U google-generativeai azure-cognitiveservices-vision-computervision
 ```
+If you choose to set up your own virtual environment, remember to use Python version 3.12.
 
 # Run main experiment
 You can generate the main experiment plot by running:
