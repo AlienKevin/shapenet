@@ -10,6 +10,6 @@ google_embeddings.py
 - '-i, ---img_dir': The path to a directory containing image files ( accepts multiple)
 - '-t, ---txt_dir': The path to a directory containing text files (accepts multiple)
 
-Example from shapenet root: python3 vertex/google_embeddings.py -i snapshots/camera -t ImagetoText/ImagetoTextOutput 
+Example from shapenet root: python vertex/google_embeddings.py -i snapshots/camera -t ImagetoText/ImagetoTextOutput 
 
 **Warning:** Repeated directory names will overwrite each other so make sure input directory names are unique.

@@ -4,10 +4,10 @@ import subprocess
 
 def run_scripts(image_path):
     # Run the first script
-    subprocess.run(["python3", "GPTimagetotext.py", image_path])
+    subprocess.run(["python", "GPTimagetotext.py", image_path])
 
     # Run the second script
-    subprocess.run(["python3", "Geminiimagetotext.py", image_path])
+    subprocess.run(["python", "Geminiimagetotext.py", image_path])
 
 def main():
     if len(sys.argv) != 2:

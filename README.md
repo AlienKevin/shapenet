@@ -33,8 +33,9 @@ We generate text and image embeddings using two off-the-shelf multimodal embeddi
 
 # Environment Setup
 ```
-conda create -n multimodal3d -c conda-forge python=3.12 tqdm scipy numpy matplotlib
+conda create -n multimodal3d -c conda-forge python=3.12 tqdm scipy numpy matplotlib replicate pillow requests rouge-score click google-cloud-aiplatform
 conda activate multimodal3d
+python -m pip install -U google-generativeai azure-cognitiveservices-vision-computervision
 ```
 
 # Run main experiment
