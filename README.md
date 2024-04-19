@@ -42,12 +42,12 @@ If you choose to set up your own virtual environment, remember to use Python ver
 # Run main experiment
 You can generate the main experiment plot by running:
 ```
-python search.py --approach all --k 1 --embedding_model vertex
+python search.py --approach all --k 1 --embedding_model azure
 ```
-You should see a plot named `percent_top_1_hits_vertex.png` as a result.
+You should see a plot named `percent_top_1_hits_azure.png` as a result.
 
 In the paper, we vary k to be `1`, `5`, and `10` to analyze precision at different values of top k.
-We also experiment with embedding_model to be `vertex` and `azure`.
+We also experiment with two embedding_models: `azure` and `vertex`.
 
 You can compare the percent hits performance of text-only, sketch-only, and weighted-sum (image-weight=0.6) by running:
 ```
