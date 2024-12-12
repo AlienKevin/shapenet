@@ -2,6 +2,8 @@
 
 This is the repository for all the code and data used for the paper titled "Multimodal 3D Shape Retrieval with Sketch and Text" by Xiang Li, Yuyao Huang, Ethan Chau, Zaid Shahid, and Ashwin Kumar.
 
+Read the associated paper [here](https://github.com/AlienKevin/shapenet/blob/main/paper.pdf).
+
 # Our Dataset
 ## 3D Shapes
 We annotated 113 3D objects in the camera category of the ShapeNetCore dataset. You can find the original OBJ shapes from that dataset under `objs/02942699/`, where `02942699` is the original id for the camera category.
